@@ -448,12 +448,6 @@ class POSInvoice(SalesInvoice):
 		if self.pos_profile:
 			profile = frappe.get_doc("POS Profile", self.pos_profile)
 
-		if not self.get("payments") and not for_validate:
-			update_multi_mode_option(self, profile)
-
-		if self.is_return and not for_validate:
-			add_return_modes(self, profile)
-
 		if profile:
 			if not for_validate and not self.customer:
 				self.customer = profile.customer
@@ -519,6 +513,12 @@ class POSInvoice(SalesInvoice):
 			if self.taxes_and_charges and not len(self.get("taxes")):
 				self.set_taxes()
 
+		if not self.get("payments") and not for_validate:
+			update_multi_mode_option(self, profile)
+
+		if self.is_return and not for_validate:
+			add_return_modes(self, profile)
+			
 		if not self.account_for_change_amount:
 			self.account_for_change_amount = frappe.get_cached_value(
 				"Company", self.company, "default_cash_account"
